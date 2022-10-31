@@ -1,10 +1,12 @@
 import { StyleSheet, Text, View } from 'react-native';
+import Multipulation from './Component/Multipulation.js';
 import Photobooth from './Photobooth.js';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Photobooth/>
+      {/*<Photobooth/>*/}
+      <Multipulation/>
     </View>
   );
 }
