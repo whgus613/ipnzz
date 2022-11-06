@@ -4,9 +4,9 @@ import * as MediaLibrary from "expo-media-library";
 import { useState, useRef, useEffect } from "react";
 import usePermission from "./usePermisson";
 import Button from "./Button";
-import ViewShot from 'react-native-view-shot';
+import ViewShot from "react-native-view-shot";
 
-export default function Cam({navigation, route}) {
+export default function Cam({ navigation, route }) {
   const hasCameraPermissions = usePermission(Camera);
   const type = Camera.Constants.Type.front;
   const cameraRef = useRef(null);
@@ -19,16 +19,14 @@ export default function Cam({navigation, route}) {
   const [image3, setImage3] = useState(null);
   const [image4, setImage4] = useState(null);
 
-  const ref = useRef();
+  const bg = [
+    require("../img/1.png"),
+    require("../img/2.png"),
+    require("../img/3.png"),
+    require("../img/4.png"),
+  ];
 
-  const takeScreenShot = () => {
-    // to take a screenshot
-     ref.current.capture().then(uri => {
-       // to save screenshot in local memory
-       CameraRoll.save(uri,{type:"photo",album:"Album codes"});
-       alert("Took screenshot");
-     });
-   };
+  const ref = useRef();
 
   useEffect(() => {
     if (!timerOn) {
@@ -43,6 +41,11 @@ export default function Cam({navigation, route}) {
     }, 1000);
   }, [timerOn, setTimerOn, timer]);
 
+  const start = async () => {
+    setTimerOn(true);
+    takePicture();
+  };
+
   const takePicture = async () => {
     setTimerOn(true);
     setTimeout(async function () {
@@ -51,31 +54,31 @@ export default function Cam({navigation, route}) {
       setImage(data.uri);
       setTimerOn(false);
       setTimerOn(true);
-    }, 3000);
+    }, 3500);
     setTimeout(async function () {
       const options = { quality: 0.5, base64: true, skipProcessing: false };
       const data = await cameraRef.current.takePictureAsync(options);
       setImage2(data.uri);
       setTimerOn(false);
       setTimerOn(true);
-    }, 6100);
+    }, 8000);
     setTimeout(async function () {
       const options = { quality: 0.5, base64: true, skipProcessing: false };
       const data = await cameraRef.current.takePictureAsync(options);
       setImage3(data.uri);
       setTimerOn(false);
       setTimerOn(true);
-    }, 9200);
+    }, 12000);
     setTimeout(async function () {
       const options = { quality: 0.5, base64: true, skipProcessing: false };
       const data = await cameraRef.current.takePictureAsync(options);
       setImage4(data.uri);
       setTimerOn(false);
-    }, 12300);
+    }, 16000);
   };
 
   const savePicture = async (uri) => {
-    ref.current.capture().then(uri => {
+    ref.current.capture().then((uri) => {
       MediaLibrary.saveToLibraryAsync(uri);
     });
   };
@@ -84,12 +87,11 @@ export default function Cam({navigation, route}) {
     return <Text>No permission to access camera</Text>;
   }
 
-
   return (
     <View style={styles.container}>
       <View
         style={{
-          width: 300,
+          width: 360,
           marginVertical: 20,
           flexDirection: "row",
           justifyContent: "space-between",
@@ -102,17 +104,66 @@ export default function Cam({navigation, route}) {
         <Camera style={styles.camera} type={type} ref={cameraRef} />
       ) : (
         <View>
-          <ViewShot ref={ref} options={{ format: 'jpg', quality: 0.9 }}>
+          <ViewShot ref={ref} options={{ format: "jpg", quality: 0.9 }}>
             <View>
-              <ImageBackground style={{width: 400, height: 600, marginVertical: 10}} source={route.params.frame} >
-                <View style={{ flexDirection: "row"}}> 
-                  <View>
-                    <Image style={{ width: 150, height: 200, transform: [{ scaleX: -1 }] }} source={{ uri: image }} />
-                    <Image style={{ width: 150, height: 200, transform: [{ scaleX: -1 }] }} source={{ uri: image2 }} />
+              <ImageBackground
+                style={{ width: 400, height: 600 }}
+                source={bg[route.params.frame]}
+              >
+                <View>
+                  <View
+                    style={{
+                      justifyContent: "center",
+                      alignItem: "center",
+                      flexDirection: "row",
+                      marginTop: 97,
+                    }}
+                  >
+                    <Image
+                      style={{
+                        width: 170,
+                        height: 227,
+                        transform: [{ scaleX: -1 }],
+                        marginRight: 8,
+                      }}
+                      source={{ uri: image }}
+                    />
+                    <Image
+                      style={{
+                        width: 170,
+                        height: 227,
+                        transform: [{ scaleX: -1 }],
+                        marginLeft: 8,
+                      }}
+                      source={{ uri: image2 }}
+                    />
                   </View>
-                  <View>
-                    <Image style={{ width: 150, height: 200, transform: [{ scaleX: -1 }] }} source={{ uri: image3 }} />
-                    <Image style={{ width: 150, height: 200, transform: [{ scaleX: -1 }] }} source={{ uri: image4 }} />
+                  <View
+                    style={{
+                      justifyContent: "center",
+                      alignItem: "center",
+                      flexDirection: "row",
+                      marginTop: 15,
+                    }}
+                  >
+                    <Image
+                      style={{
+                        width: 170,
+                        height: 227,
+                        transform: [{ scaleX: -1 }],
+                        marginRight: 8,
+                      }}
+                      source={{ uri: image3 }}
+                    />
+                    <Image
+                      style={{
+                        width: 170,
+                        height: 227,
+                        transform: [{ scaleX: -1 }],
+                        marginLeft: 8,
+                      }}
+                      source={{ uri: image4 }}
+                    />
                   </View>
                 </View>
               </ImageBackground>
@@ -133,7 +184,7 @@ export default function Cam({navigation, route}) {
           </View>
         ) : (
           <View style={{ marginTop: 20 }}>
-            <Button icon={"camera"} color="#000" onPress={takePicture} />
+            <Button icon={"camera"} color="#000" onPress={start} />
           </View>
         )}
       </View>
@@ -149,8 +200,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   camera: {
-    width: 300,
-    height: 400,
+    width: 360,
+    height: 480,
     position: "relative",
   },
   takenImage: {
